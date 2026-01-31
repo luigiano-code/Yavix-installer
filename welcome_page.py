@@ -12,7 +12,7 @@ class WelcomePage(Gtk.Box):
         self.set_margin_start(50)
         self.set_margin_end(50)
 
-        welcome_label = Gtk.Label(label="Welcome to Lightix Installer!")
+        welcome_label = Gtk.Label(label="Welcome to Yavix Installer!")
         welcome_label.set_wrap(True)
         welcome_label.set_wrap_mode(Gtk.WrapMode.WORD)
         welcome_label.set_halign(Gtk.Align.CENTER)
@@ -45,7 +45,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
 class InstallerApp(Adw.Application):
     def __init__(self):
-        super().__init__(application_id="com.luigiano-code.Lightix-installer", flags=0)
+        super().__init__(application_id="com.luigiano-code.Yavix-installer", flags=0)
 
     def do_activate(self):
         win = MainWindow(self)

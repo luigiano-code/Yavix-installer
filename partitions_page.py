@@ -21,7 +21,7 @@ class PartitionsPage(Gtk.Box):
         self.open_gparted.connect("clicked", self.on_gparted_clicked)
         self.append(self.open_gparted)
 
-        self.erase_disk = Gtk.Button(label="Erase disk and install Lightix")
+        self.erase_disk = Gtk.Button(label="Erase disk and install Yavix")
         self.erase_disk.connect("clicked", self.on_erase_clicked)
         self.append(self.erase_disk)
 

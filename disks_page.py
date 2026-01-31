@@ -1,6 +1,6 @@
 import gi
-from bauh.gems.flatpak.worker import FlatpakAsyncDataLoader
-from wx.lib.inspection import orientFlags
+# from bauh.gems.flatpak.worker import FlatpakAsyncDataLoader
+# from wx.lib.inspection import orientFlags
 
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
@@ -32,7 +32,12 @@ class DisksPage(Gtk.Box):
         self.partition_combo = Gtk.ComboBoxText()
         self.partition_combo.append_text("Disk not selected")
         self.partition_combo.set_active(0)
+
         self.vbox1.append(self.partition_combo)
+
+        self.refresh_button = Gtk.Button(label="Refresh")
+        self.refresh_button.connect("clicked", self.on_refresh_clicked)
+        self.vbox1.append(self.refresh_button)
 
         self.append(self.vbox1)
 
@@ -52,9 +57,9 @@ class DisksPage(Gtk.Box):
         self.vbox3.append(label3)
 
         self.flags_combo = Gtk.ComboBoxText()
-        self.flags_combo.append_text("Brak")
+        self.flags_combo.append_text("No flag")
         self.flags_combo.append_text("boot")
-        self.flags_combo.append_text("esp")
+        self.flags_combo.append_text("boot & esp")
         self.flags_combo.append_text("swap")
         self.flags_combo.set_active(0)
         self.vbox3.append(self.flags_combo)
@@ -98,6 +103,23 @@ class DisksPage(Gtk.Box):
         self.next_button.add_css_class("suggested-action")
         self.append(self.next_button)
 
+    def on_refresh_clicked(self, button):
+        disk = self.disk_combo.get_active_text()
+        if not disk:
+            return
+
+        self.partition_combo.remove_all()
+        partitions = self.list_partitions(disk)
+
+        if partitions:
+            for p in partitions:
+                self.partition_combo.append_text(p)
+        else:
+            self.partition_combo.append_text("No partition")
+
+        self.partition_combo.set_active(0)
+
+
     def list_disks(self):
         disks = []
         output = subprocess.check_output(["lsblk", "-dn", "-o", "NAME,TYPE"]).decode()
@@ -107,7 +129,7 @@ class DisksPage(Gtk.Box):
                 disks.append(f"/dev/{name}")
         return disks
 
-    def list_partitions(self, disk):
+    def list_partitions(self, disk, button=None):
         partitions = []
         output = subprocess.check_output(["lsblk", "-ln", "-o", "NAME,TYPE", disk]).decode()
         for line in output.splitlines():
