@@ -5,8 +5,9 @@ from gi.repository import Gtk, Adw, GLib
 
 
 class SettingPage(Gtk.Box):
-    def __init__(self):
+    def __init__(self, main_window):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        self.main_window = main_window 
         self.set_margin_top(50)
         self.set_margin_bottom(50)
         self.set_margin_start(50)
@@ -60,3 +61,7 @@ class SettingPage(Gtk.Box):
         installer.settings_password = self.password_entry.get_text()
         installer.settings_pcname = self.PCName_entry.get_text()
         installer.settings_username = self.username_entry.get_text()
+
+        if installer.settings_password == self.confirm_entry.get_text():
+            # Używamy istniejącego MainWindow
+            self.main_window.show_installation_page(None)

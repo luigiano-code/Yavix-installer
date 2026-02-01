@@ -15,6 +15,8 @@ from partitions_page import PartitionsPage
 from setting_page import SettingPage
 from installation_page import InstallationPage
 
+selected_disk = None
+
 partitions_flags = {}
 partitions_mount_points = {}
 partitions_format = {}
@@ -38,7 +40,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.language_page = LanguagePage()
         self.disks_page = DisksPage()
         self.partitions_page = PartitionsPage()
-        self.setting_page = SettingPage()
+        self.setting_page = SettingPage(self)
         self.installation_page = InstallationPage()
 
         self.stack.add_named(self.welcome_page, "welcome")
@@ -52,7 +54,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.language_page.next_button.connect("clicked", self.show_partitions_page)
         self.partitions_page.next_button.connect("clicked", self.show_disks_page)
         self.disks_page.next_button.connect("clicked", self.show_setting_page)
-        self.setting_page.next_button.connect("clicked", self.show_installation_page)
+        #self.setting_page.next_button.connect("clicked", self.show_installation_page)
         self.stack.set_visible_child_name("welcome")
 
     def show_partitions_page(self, button):
@@ -68,10 +70,11 @@ class MainWindow(Gtk.ApplicationWindow):
         self.stack.set_visible_child_name("setting")
 
     def install_done(self):
-        InstallationPage().append(InstallationPage().next_button)
+        self.installation_page.next_button.set_visible(True)
+
 
     def install_thread(self):
-        InstallationPage().install_system()
+        self.installation_page.install_system()
         GLib.idle_add(self.install_done)
 
     def show_installation_page(self, button):
@@ -79,6 +82,7 @@ class MainWindow(Gtk.ApplicationWindow):
         t = threading.Thread(target=self.install_thread)
         t.daemon = True
         t.start()
+
      
 
 class InstallerApp(Adw.Application):

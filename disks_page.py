@@ -6,6 +6,7 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 import subprocess
 
+
 class DisksPage(Gtk.Box):
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -145,7 +146,9 @@ class DisksPage(Gtk.Box):
         from installer import partitions_flags
         from installer import partitions_mount_points
         from installer import partitions_format
+        import installer
 
+        installer.selected_disk = self.disk_combo.get_active_text()
         self.partition_flags = partitions_flags
         self.partition_mount_points = partitions_mount_points
         self.partition_format = partitions_format

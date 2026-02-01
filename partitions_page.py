@@ -21,17 +21,10 @@ class PartitionsPage(Gtk.Box):
         self.open_gparted.connect("clicked", self.on_gparted_clicked)
         self.append(self.open_gparted)
 
-        self.erase_disk = Gtk.Button(label="Erase disk and install Yavix")
-        self.erase_disk.connect("clicked", self.on_erase_clicked)
-        self.append(self.erase_disk)
-
         self.next_button = Gtk.Button(label="Next")
         self.next_button.add_css_class("suggested-action")
         self.next_button.connect("clicked", self.on_next_clicked)
         self.append(self.next_button)
-
-    def on_erase_clicked(self, button):
-        print("die")
 
     def on_next_clicked(self, button):
         print("next")

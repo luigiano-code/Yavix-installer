@@ -6,6 +6,8 @@ from gi.repository import Gtk, Adw, GLib
 import subprocess
 import threading
 
+import re
+
 class InstallationPage(Gtk.Box):
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=20)
@@ -22,15 +24,21 @@ class InstallationPage(Gtk.Box):
         self.next_button = Gtk.Button(label="Next")
         self.next_button.add_css_class("suggested-action")
         self.next_button.connect("clicked", self.on_next_clicked)
+        self.next_button.set_visible(False)
+        self.append(self.next_button)
 
     def arch_chroot(self, cmd, MNT="/mnt"):
         subprocess.run(["sudo", "arch-chroot", MNT] + cmd)
 
     def install_system(self):
-
+        from installer import settings_password
+        from installer import settings_pcname 
+        from installer import settings_username
         import installer
 
         root = None
+
+        MNT = "/mnt"
 
         for i in installer.partitions_format:
             fmt = str(installer.partitions_format[i]).lower()
@@ -54,24 +62,35 @@ class InstallationPage(Gtk.Box):
                 subprocess.run(["sudo", "mkfs.fat", "-F", "32", "-I", i])
 
         for i in installer.partitions_flags:
+            partition = i
+
+            num_str = ""
+            for c in reversed(partition):
+                if c.isdigit():
+                    num_str = c + num_str
+                else:
+                    break
+
+            partition_number = int(num_str)
+            print(partition_number)
+            print(installer.selected_disk)
+
             if installer.partitions_flags[i] == "boot":
-                subprocess.run(["sudo", "parted", "-s", i, "set", "1", "boot", "on"])
+                subprocess.run(["sudo", "parted", "-s", installer.selected_disk, "set", str(partition_number), "boot", "on"])
             if installer.partitions_flags[i] == "boot & esp":
-                subprocess.run(["sudo", "parted", "-s", i, "set", "1", "boot", "on"])
-                subprocess.run(["sudo", "parted", "-s", i, "set", "1", "esp", "on"])
+                subprocess.run(["sudo", "parted", "-s", installer.selected_disk, "set", str(partition_number), "boot", "on"])
+                subprocess.run(["sudo", "parted", "-s", installer.selected_disk, "set", str(partition_number), "esp", "on"])
             if installer.partitions_flags[i] == "swap":
-                subprocess.run(["sudo", "parted", "-s", i, "set", i, "swap", "on"])
-
-
+                subprocess.run(["sudo", "parted", "-s", installer.selected_disk, "set", str(partition_number), "swap", "on"])
 
         for i in installer.partitions_mount_points.values():
             if i == "/":
                 for o in installer.partitions_mount_points:
                     if installer.partitions_mount_points[o] == i:
                         root = o
-                        subprocess.run(["sudo", "mount", root, "/mnt"])
+                        subprocess.run(["sudo", "mount", root, MNT])
         for p in installer.partitions_mount_points:
-            mountpoint = "/mnt" + installer.partitions_mount_points[p]
+            mountpoint = MNT + installer.partitions_mount_points[p]
             subprocess.run(["sudo", "mount", "--mkdir", p, mountpoint])
 
         print("copying airootfs")
@@ -88,13 +107,10 @@ class InstallationPage(Gtk.Box):
             "--exclude=/media/*",
             "--exclude=/lost+found",
             "/",
-            "/mnt"
+            MNT
         ]
 
         subprocess.run(cmd)
-
-
-        MNT = "/mnt"
 
         subprocess.run(["sudo", "mount", "--bind", "/dev", f"{MNT}/dev"])
         subprocess.run(["sudo", "mount", "--bind", "/proc", f"{MNT}/proc"])
@@ -120,15 +136,25 @@ class InstallationPage(Gtk.Box):
         self.arch_chroot(["grub-install", "--target=x86_64-efi", "--efi-directory=/boot", "--bootloader-id=YAVIX"])
         self.arch_chroot(["grub-mkconfig", "-o", "/boot/grub/grub.cfg"])
 
-        self.arch_chroot(["sudo", "umount", "/mnt"])
+        self.arch_chroot(["useradd", "-m", "-G", "wheel", "-s", "/bin/bash", settings_username])
+        self.arch_chroot(["sh", "-c", f"echo 'root:{settings_password}' | chpasswd"])
+        self.arch_chroot(["sh", "-c", f"echo '{settings_username}:{settings_password}' | chpasswd"])
+        self.arch_chroot(["sh", "-c", f"echo '{settings_pcname}' > /etc/hostname"])
+        self.arch_chroot(["sudo", "userdel", "-r", "liveuser"])
+        self.arch_chroot(["sudo", "groupdel", "liveuser"])
+        self.arch_chroot(["sudo", "mkdir", "-p", "/home/" + settings_username])
+        self.arch_chroot(["sudo", "chown", "-R", settings_username + ":" + settings_username, "/home/" + settings_username])
+        self.arch_chroot(["sudo", "chmod", "700", "/home/" + settings_username])
+
+        services = [
+            "systemd-logind",
+            "dbus",
+            "NetworkManager",
+            "gdm"
+        ]
+
+        for service in services:
+            self.arch_chroot(["sudo", "systemctl", "enable", service])
 
     def on_next_clicked(self, button):
-
-        from installer import settings_password
-        from installer import settings_pcname 
-        from installer import settings_username
-
-        print("your name: " + settings_username)
-        print("your computer`s name: " + settings_pcname)
-        print("your password: " + settings_password)
-
+        pass
