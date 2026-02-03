@@ -63,5 +63,4 @@ class SettingPage(Gtk.Box):
         installer.settings_username = self.username_entry.get_text()
 
         if installer.settings_password == self.confirm_entry.get_text():
-            # Używamy istniejącego MainWindow
             self.main_window.show_installation_page(None)

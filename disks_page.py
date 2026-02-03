@@ -1,6 +1,4 @@
 import gi
-# from bauh.gems.flatpak.worker import FlatpakAsyncDataLoader
-# from wx.lib.inspection import orientFlags
 
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
@@ -172,9 +170,4 @@ class DisksPage(Gtk.Box):
         self.partition_combo.set_active(0)
 
     def on_next_clicked(self, button):
-            print(f"Selected Disk: {self.disk_combo.get_active_text()}")
-            print(f"Selected Partition: {self.partition_combo.get_active_text()}")
-            print(self.partition_flags)
-            print(self.partition_mount_points)
-            print(self.partition_format)
-
+        pass

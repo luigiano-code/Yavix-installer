@@ -17,6 +17,8 @@ from installation_page import InstallationPage
 
 selected_disk = None
 
+language = None
+
 partitions_flags = {}
 partitions_mount_points = {}
 partitions_format = {}
@@ -54,7 +56,6 @@ class MainWindow(Gtk.ApplicationWindow):
         self.language_page.next_button.connect("clicked", self.show_partitions_page)
         self.partitions_page.next_button.connect("clicked", self.show_disks_page)
         self.disks_page.next_button.connect("clicked", self.show_setting_page)
-        #self.setting_page.next_button.connect("clicked", self.show_installation_page)
         self.stack.set_visible_child_name("welcome")
 
     def show_partitions_page(self, button):

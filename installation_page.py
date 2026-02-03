@@ -72,8 +72,6 @@ class InstallationPage(Gtk.Box):
                     break
 
             partition_number = int(num_str)
-            print(partition_number)
-            print(installer.selected_disk)
 
             if installer.partitions_flags[i] == "boot":
                 subprocess.run(["sudo", "parted", "-s", installer.selected_disk, "set", str(partition_number), "boot", "on"])
@@ -93,7 +91,6 @@ class InstallationPage(Gtk.Box):
             mountpoint = MNT + installer.partitions_mount_points[p]
             subprocess.run(["sudo", "mount", "--mkdir", p, mountpoint])
 
-        print("copying airootfs")
         cmd = [
             "sudo",
             "rsync",

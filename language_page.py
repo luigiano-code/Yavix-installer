@@ -17,9 +17,13 @@ class LanguagePage(Gtk.Box):
         self.append(title)
 
         self.lang_combo = Gtk.ComboBoxText()
-        self.lang_combo.append_text("English")
         self.lang_combo.set_active(0)
+        self.lang_combo.connect("changed", self.on_lang_changed)
         self.append(self.lang_combo)
+        
+        self.sub_lang_combo = Gtk.ComboBoxText()
+        self.sub_lang_combo.set_active(0)
+        self.append(self.sub_lang_combo)
 
         self.tz_combo = Gtk.ComboBoxText()
         self.tz_combo.append_text("Europe/London")
@@ -32,7 +36,80 @@ class LanguagePage(Gtk.Box):
         self.next_button.connect("clicked", self.on_next_clicked)
         self.append(self.next_button)
 
+        self.get_languages()
+
+    def get_languages(self):
+        filename = "locales.txt"
+        top_langs = [
+            "ar_SA", "bg_BG", "cs_CZ", "da_DK", "de_DE", "el_GR", "en_GB",
+            "en_US", "es_ES", "fi_FI", "fr_FR", "he_IL", "hi_IN", "hu_HU",
+            "it_IT", "ja_JP", "ko_KR", "nl_NL", "no_NO", "pl_PL", "pt_BR",
+            "pt_PT", "ro_RO", "ru_RU", "sk_SK", "sv_SE", "tr_TR", "uk_UA",
+            "zh_CN",
+            "zh_TW",
+        ]
+
+        langs = []
+        readable_langs = []
+
+        with open(filename, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip().lstrip("#")
+                if line == "":
+                    continue
+
+                lang_code = line.split(".")[0].split()[0].split("@")[0]
+                langs.append(lang_code)
+
+        seen = set()
+        for lang in langs:
+            if lang not in seen:
+                readable_langs.append(lang)
+                seen.add(lang)
+
+        final_langs = []
+
+        for lang in top_langs:
+            if lang in readable_langs:
+                final_langs.append(lang)
+                readable_langs.remove(lang)
+
+        final_langs.append("-------------------------------------------------")
+
+        final_langs.extend(sorted(readable_langs))
+
+
+        for i in final_langs:
+            self.lang_combo.append_text(i)
+
+    def on_lang_changed(self, lang_combo):
+        getlang = lang_combo.get_active_text()
+        
+        if getlang == "----------":
+            self.sub_lang_combo.remove_all()
+            return
+
+        filename = "locales.txt"
+        selected_langs = []
+
+        with open(filename, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip().lstrip("#")
+                if line == "":
+                    continue
+
+                if line.startswith(getlang) and "UTF-8" in line:
+                    selected_langs.append(line)
+
+        self.sub_lang_combo.remove_all()
+        for lang in selected_langs:
+            self.sub_lang_combo.append_text(lang)
+
+        if selected_langs:
+            self.sub_lang_combo.set_active(0)
+
+
     def on_next_clicked(self, button):
-        lang = self.lang_combo.get_active_text()
+        import installer
+        installer.language = self.sub_lang_combo.get_active_text()
         tz = self.tz_combo.get_active_text()
-        print(f"Selected language: {lang}, selected timezone: {tz}")

@@ -31,8 +31,7 @@ class WelcomePage(Gtk.Box):
         self.append(self.start_button)
 
     def on_start_clicked(self, button):
-        print("instalation starts")
-
+        pass
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app)

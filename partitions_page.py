@@ -27,7 +27,6 @@ class PartitionsPage(Gtk.Box):
         self.append(self.next_button)
 
     def on_next_clicked(self, button):
-        print("next")
-
+        pass
     def on_gparted_clicked(self, button):
         subprocess.Popen(["gparted"])
