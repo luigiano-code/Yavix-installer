@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Yavix Installer
+
+Exec=/usr/bin/installer
+
+Icon=/usr/bin/yavix-installer/images/installer-logo.svg
+
+Terminal=false
+Type=Application
+StartupNotify=false
