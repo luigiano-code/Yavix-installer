@@ -63,7 +63,7 @@ class LanguagePage(Gtk.Box):
 				self.sub_tz_combo.append_text(city)
 
 	def get_languages(self):
-		filename = "locales.txt"
+		filename = "/usr/bin/yavix-installer/locales.txt"
 		top_langs = [
 			"ar_SA", "bg_BG", "cs_CZ", "da_DK", "de_DE", "el_GR", "en_GB",
 			"en_US", "es_ES", "fi_FI", "fr_FR", "he_IL", "hi_IN", "hu_HU",
@@ -114,7 +114,7 @@ class LanguagePage(Gtk.Box):
 			self.sub_lang_combo.remove_all()
 			return
 
-		filename = "locales.txt"
+		filename = "/usr/share/yavix-installer/locales.txt"
 		selected_langs = []
 
 		with open(filename, "r", encoding="utf-8") as f:
