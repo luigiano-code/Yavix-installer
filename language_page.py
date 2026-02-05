@@ -99,7 +99,8 @@ class LanguagePage(Gtk.Box):
 				readable_langs.remove(lang)
 
 		final_langs.append("-------------------------------------------------")
-
+		final_langs.append("                 OTHER LANGUAGES                 ")
+		final_langs.append("-------------------------------------------------")
 		final_langs.extend(sorted(readable_langs))
 
 
@@ -109,7 +110,7 @@ class LanguagePage(Gtk.Box):
 	def on_lang_changed(self, lang_combo):
 		getlang = lang_combo.get_active_text()
 		
-		if getlang == "----------":
+		if getlang == "-------------------------------------------------" or getlang == "                 OTHER LANGUAGES                 ":
 			self.sub_lang_combo.remove_all()
 			return
 
@@ -136,4 +137,6 @@ class LanguagePage(Gtk.Box):
 	def on_next_clicked(self, button):
 		import installer
 		installer.language = self.sub_lang_combo.get_active_text()
-		tz = self.tz_combo.get_active_text()
+		installer.timezone = self.tz_combo.get_active_text() + "/" + self.sub_tz_combo.get_active_text()
+		print(installer.language)
+		print(installer.timezone)
