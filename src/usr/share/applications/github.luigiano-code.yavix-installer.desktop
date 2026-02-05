@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Yavix Installer
 
-Exec=/usr/bin/installer
+Exec=python /usr/bin/yavix-installer/yavix-installer
 
 Icon=/usr/bin/yavix-installer/images/installer-logo.svg
 

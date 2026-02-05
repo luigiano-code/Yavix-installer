@@ -11,6 +11,5 @@ sha256sums=()
 
 package() {
     cp -a "$startdir/src/usr" "$pkgdir/"
-	ln -s "$pkgdir/usr/bin/yavix-installer/yavix-installer" "$pkgdir/usr/bin/installer"
 }
 
