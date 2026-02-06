@@ -114,7 +114,7 @@ class LanguagePage(Gtk.Box):
 			self.sub_lang_combo.remove_all()
 			return
 
-		filename = "/usr/share/yavix-installer/locales.txt"
+		filename = "/usr/bin/yavix-installer/locales.txt"
 		selected_langs = []
 
 		with open(filename, "r", encoding="utf-8") as f:
