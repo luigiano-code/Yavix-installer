@@ -58,9 +58,9 @@ class OfficePage(Gtk.Box):
 		self.append(self.next_button)
 
 	def on_office_clicked(self, button):
-		import setup
+		import installer
 
-		setup.office = button.office
+		installer.office = button.office
 		self.next_button.set_visible(True)	
 			
 
