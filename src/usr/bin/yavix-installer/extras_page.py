@@ -49,23 +49,23 @@ class ExtrasPage(Gtk.Box):
 		self.append(self.next_button)
 
 	def on_start_clicked(self, button):
-		import setup
+		import installer
 
-		setup.extras = []
+		installer.extras = []
 		if self.checkbox_gamemode.get_active():
-			setup.extras.append("gamemode")
+			installer.extras.append("gamemode")
 
 		if self.checkbox_gamescope.get_active():
-			setup.extras.append("gamescope")
+			installer.extras.append("gamescope")
 
 		if self.checkbox_wine.get_active():
-			setup.extras.append("wine")
+			installer.extras.append("wine")
 
 		if self.checkbox_linuxzen.get_active():
-			setup.extras.append("linux-zen")
+			installer.extras.append("linux-zen")
 
 		if self.checkbox_steam.get_active():
-			setup.extras.append("steam")
+			installer.extras.append("steam")
 
 							
 

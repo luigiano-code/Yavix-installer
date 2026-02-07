@@ -15,6 +15,7 @@ from partitions_page import PartitionsPage
 from setting_page import SettingPage
 from installation_page import InstallationPage
 from browser_page import BrowserPage
+from extras_page import ExtrasPage
 
 selected_disk = None
 
@@ -22,6 +23,7 @@ language = None
 timezone = None
 
 browser = None
+extras = []
 
 partitions_flags = {}
 partitions_mount_points = {}
@@ -48,6 +50,7 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.partitions_page = PartitionsPage()
 		self.setting_page = SettingPage(self)
 		self.browser_page = BrowserPage()
+		self.extras_page = ExtrasPage()
 		self.installation_page = InstallationPage()
 
 		self.stack.add_named(self.welcome_page, "welcome")
@@ -56,6 +59,7 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.stack.add_named(self.disks_page, "disks")
 		self.stack.add_named(self.setting_page, "setting")
 		self.stack.add_named(self.browser_page, "browser")	
+		self.stack.add_named(self.extras_page, "extras")
 		self.stack.add_named(self.installation_page, "installation")
 		
 
@@ -63,10 +67,14 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.language_page.next_button.connect("clicked", self.show_partitions_page)
 		self.partitions_page.next_button.connect("clicked", self.show_disks_page)
 		self.disks_page.next_button.connect("clicked", self.show_setting_page)
+		self.browser_page.next_button.connect("clicked", self.show_extras_page)
 		self.stack.set_visible_child_name("welcome")
 
 	def show_partitions_page(self, button):
 		self.stack.set_visible_child_name("partitions")
+
+	def show_extras_page(self, button):
+		self.stack.set_visible_child_name("extras")
 
 	def show_language_page(self, button):
 		self.stack.set_visible_child_name("language")
