@@ -14,11 +14,14 @@ from disks_page import DisksPage
 from partitions_page import PartitionsPage
 from setting_page import SettingPage
 from installation_page import InstallationPage
+from browser_page import BrowserPage
 
 selected_disk = None
 
 language = None
 timezone = None
+
+browser = None
 
 partitions_flags = {}
 partitions_mount_points = {}
@@ -44,6 +47,7 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.disks_page = DisksPage()
 		self.partitions_page = PartitionsPage()
 		self.setting_page = SettingPage(self)
+		self.browser_page = BrowserPage()
 		self.installation_page = InstallationPage()
 
 		self.stack.add_named(self.welcome_page, "welcome")
@@ -51,7 +55,9 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.stack.add_named(self.partitions_page, "partitions")
 		self.stack.add_named(self.disks_page, "disks")
 		self.stack.add_named(self.setting_page, "setting")
+		self.stack.add_named(self.browser_page, "browser")	
 		self.stack.add_named(self.installation_page, "installation")
+		
 
 		self.welcome_page.start_button.connect("clicked", self.show_language_page)
 		self.language_page.next_button.connect("clicked", self.show_partitions_page)
@@ -74,9 +80,11 @@ class MainWindow(Gtk.ApplicationWindow):
 	def install_done(self):
 		self.installation_page.next_button.set_visible(True)
 
+	def show_browser_page(self):
+		self.stack.set_visible_child_name("browser")
 
 	def install_thread(self):
-		self.installation_page.install_system()
+		# self.installation_page.install_system()
 		GLib.idle_add(self.install_done)
 
 	def show_installation_page(self, button):
