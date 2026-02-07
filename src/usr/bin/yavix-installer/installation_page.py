@@ -157,7 +157,11 @@ class InstallationPage(Gtk.Box):
 		for service in services:
 			self.arch_chroot(["sudo", "systemctl", "enable", service])
 
-		self.arch_chroot(["pacman", "-Sy", "linux", "linux-headers", "--noconfirm"])
+		self.arch_chroot(["pacman", "-Sy", "linux", "linux-headers", "flatpak", "--noconfirm"])
+		self.arch_chroot(["pacman", "-Rns", "yavix-installer", "--noconfirm"])
+
+		self.arch_chroot(["flatpak", " remote-add", "--if-not-exists", "flathub", "https://flathub.org/repo/flathub.flatpakrepo"])
+		self.arch_chroot(["flatpak", "install", "-y", "flathub", "org.localsend.localsend_app"])
 
 		self.arch_chroot(["mkinitcpio", "-c", "/etc/mkinitcpio.conf", "-g", "/boot/initramfs-linux.img"])
 
