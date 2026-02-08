@@ -157,11 +157,25 @@ class InstallationPage(Gtk.Box):
 		for service in services:
 			self.arch_chroot(["sudo", "systemctl", "enable", service])
 
-		self.arch_chroot(["pacman", "-Sy", "linux", "linux-headers", "flatpak", "--noconfirm"])
+		self.arch_chroot(["pacman", "-Sy", "linux", "linux-headers", "--noconfirm"])
 		self.arch_chroot(["pacman", "-Rns", "yavix-installer", "--noconfirm"])
 
-		self.arch_chroot(["flatpak", " remote-add", "--if-not-exists", "flathub", "https://flathub.org/repo/flathub.flatpakrepo"])
+		self.arch_chroot(["flatpak", "remote-add", "--if-not-exists", "flathub", "https://flathub.org/repo/flathub.flatpakrepo"])
 		self.arch_chroot(["flatpak", "install", "-y", "flathub", "org.localsend.localsend_app"])
+
+		if installer.browser == "zen":
+			self.arch_chroot(["flatpak", "install", "-y", "flathub", "app.zen_browser.zen"])
+			self.arch_chroot(["pacman", "-Rns", "firefox", "--noconfirm"])
+
+		elif installer.browser == "brave":
+			self.arch_chroot(["flatpak", "install", "-y", "flathub", "com.brave.Browser"])
+			self.arch_chroot(["pacman", "-Rns", "firefox", "--noconfirm"])
+
+		if installer.office == "libreoffice":
+			self.arch_chroot(["flatpak", "install", "-y", "flathub", "org.libreoffice.LibreOffice"])
+
+		elif installer.office == "onlyoffice":
+			self.arch_chroot(["flatpak", "install", "-y", "flathub", "org.onlyoffice.desktopeditors"])
 
 		self.arch_chroot(["mkinitcpio", "-c", "/etc/mkinitcpio.conf", "-g", "/boot/initramfs-linux.img"])
 

@@ -39,6 +39,7 @@ class LanguagePage(Gtk.Box):
 		self.next_button = Gtk.Button(label="Next")
 		self.next_button.add_css_class("suggested-action")
 		self.next_button.connect("clicked", self.on_next_clicked)
+		self.next_button.set_size_request(200, 50)
 		self.append(self.next_button)
 
 		self.get_languages()

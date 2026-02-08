@@ -43,11 +43,22 @@ class OfficePage(Gtk.Box):
 		self.onlyoffice_button.set_child(self.onlyoffice_icon)
 		self.onlyoffice_button.connect("clicked", self.on_office_clicked)
 
+		svg_path = os.path.join(BASE_DIR, "images", "nooffice.svg")
+
+		self.nooffice_button = Gtk.Button()
+		self.nooffice_button.office = "nooffice"		
+		self.nooffice_icon = Gtk.Image.new_from_file(svg_path)
+		self.nooffice_icon.set_pixel_size(icon_size)
+		self.nooffice_button.set_child(self.nooffice_icon)
+		self.nooffice_button.connect("clicked", self.on_office_clicked)
+
 		self.libreoffice_button.set_hexpand(True)
 		self.onlyoffice_button.set_hexpand(True)
+		self.nooffice_button.set_hexpand(True)		
 
 		self.vbox1.append(self.libreoffice_button)
 		self.vbox1.append(self.onlyoffice_button)
+		self.vbox1.append(self.nooffice_button)
 		self.append(self.vbox1)
 
 		self.next_button = Gtk.Button(label="Next")
