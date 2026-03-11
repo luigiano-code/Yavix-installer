@@ -163,6 +163,8 @@ class InstallationPage(Gtk.Box):
 		self.arch_chroot(["flatpak", "remote-add", "--if-not-exists", "flathub", "https://flathub.org/repo/flathub.flatpakrepo"])
 		self.arch_chroot(["flatpak", "install", "-y", "flathub", "org.localsend.localsend_app"])
 
+		self.arch_chroot(["flatpak", "install", "-y", "flathub", "it.mijorus.gearlever"])
+
 		if installer.browser == "zen":
 			self.arch_chroot(["flatpak", "install", "-y", "flathub", "app.zen_browser.zen"])
 			self.arch_chroot(["pacman", "-Rns", "firefox", "--noconfirm"])
