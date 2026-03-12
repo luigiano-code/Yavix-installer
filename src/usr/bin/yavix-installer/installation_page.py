@@ -188,8 +188,8 @@ class InstallationPage(Gtk.Box):
 
 		self.arch_chroot(["rm", "-f", "/etc/pacman.conf"])
 		self.arch_chroot(["cp", "-f", "/etc/pacman-conf-new", "/etc/pacman.conf"])
-		self.arch_chroot(["pacman", "-Rns", "yavix-center"])
-		self.arch_chroot(["pacman", "-Sy", "yavix-center"])
+		self.arch_chroot(["pacman", "-Rns", "yavix-center", "--no-confirm"])
+		self.arch_chroot(["pacman", "-Sy", "yavix-center", "--no-confirm"])
 
 	def on_next_clicked(self, button):
 		pass
