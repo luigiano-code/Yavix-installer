@@ -147,6 +147,8 @@ class InstallationPage(Gtk.Box):
 		self.arch_chroot(["hwclock", "--systohc"])
 		self.arch_chroot(["sh", "-c", "echo '' > /etc/motd"])
 
+		self.arch_chroot(["sudo", "-u", settings_username, "xdg-user-dirs-update"])		
+
 		services = [
 			"systemd-logind",
 			"dbus",
