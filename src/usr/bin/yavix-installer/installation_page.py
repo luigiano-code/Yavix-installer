@@ -186,5 +186,10 @@ class InstallationPage(Gtk.Box):
 		self.arch_chroot(["grub-install", "--target=x86_64-efi", "--efi-directory=/boot", "--bootloader-id=YAVIX"])
 		self.arch_chroot(["grub-mkconfig", "-o", "/boot/grub/grub.cfg"])
 
+		self.arch_chroot(["rm", "-f", "/etc/pacman.conf"])
+		self.arch_chroot(["cp", "-f", "/etc/pacman-conf-new", "/etc/pacman.conf"])
+		self.arch_chroot(["pacman", "-Rns", "yavix-center"])
+		self.arch_chroot(["pacman", "-Sy", "yavix-center"])
+
 	def on_next_clicked(self, button):
 		pass
