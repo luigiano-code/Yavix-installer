@@ -14,9 +14,15 @@ class DisksPage(Gtk.Box):
         self.set_margin_end(20)
 
         self.vbox1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-        self.vbox2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-        self.vbox3 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-        self.vbox4 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+
+        self.partition_widgets = {}
+
+        self.scrolled = Gtk.ScrolledWindow()
+        self.scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.scrolled.set_min_content_height(200)
+
+        self.partitions_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.scrolled.set_child(self.partitions_box)
 
         label = Gtk.Label(label="Select Disk:")
         label.set_halign(Gtk.Align.START)
@@ -28,74 +34,15 @@ class DisksPage(Gtk.Box):
         self.disk_combo.set_active(0)
         self.vbox1.append(self.disk_combo)
 
-        self.partition_combo = Gtk.ComboBoxText()
-        self.partition_combo.append_text("Disk not selected")
-        self.partition_combo.set_active(0)
-
-        self.vbox1.append(self.partition_combo)
-
         self.refresh_button = Gtk.Button(label="Refresh")
         self.refresh_button.connect("clicked", self.on_refresh_clicked)
         self.vbox1.append(self.refresh_button)
 
         self.append(self.vbox1)
+        self.append(self.scrolled)
 
         self.disk_combo.connect("changed", self.on_disk_changed)
         self.on_disk_changed(self.disk_combo)
-
-        label2 = Gtk.Label(label="Select mount point:")
-        label2.set_halign(Gtk.Align.START)
-        self.vbox2.append(label2)
-
-        self.mount_entry = Gtk.Entry()
-        self.mount_entry.set_placeholder_text("Set mount point")
-        self.vbox2.append(self.mount_entry)
-
-        label3 = Gtk.Label(label="Select flag:")
-        label3.set_halign(Gtk.Align.START)
-        self.vbox3.append(label3)
-
-        self.flags_combo = Gtk.ComboBoxText()
-        self.flags_combo.append_text("No flag")
-        self.flags_combo.append_text("boot")
-        self.flags_combo.append_text("boot & esp")
-        self.flags_combo.append_text("swap")
-        self.flags_combo.set_active(0)
-        self.vbox3.append(self.flags_combo)
-
-        self.append(self.vbox2)
-        self.append(self.vbox3)
-
-        self.checkbox = Gtk.CheckButton(label="format partition")
-        self.checkbox.connect("toggled", self.on_toggled)
-        self.vbox4.append(self.checkbox)
-
-        self.formats = Gtk.ComboBoxText()
-        self.formats.append_text("ext4")
-        self.formats.append_text("ext3")
-        self.formats.append_text("ext2")
-        self.formats.append_text("btrfs")
-        self.formats.append_text("exfat")
-        self.formats.append_text("fat32")
-        self.formats.set_active(0)
-        self.formats.set_visible(False)
-        self.vbox4.append(self.formats)
-
-        self.append(self.vbox4)
-
-        self.apply_button = Gtk.Button(label="Set for partition")
-        self.apply_button.connect(
-            "clicked",
-            lambda btn: self.on_apply_clicked(
-                btn,
-                self.partition_combo.get_active_text(),
-                self.mount_entry.get_text(),
-                self.flags_combo.get_active_text()
-            )
-        )
-
-        self.apply_button.add_css_class("suggested-action")
-        self.append(self.apply_button)
 
         self.next_button = Gtk.Button(label="Next")
         self.next_button.connect("clicked", self.on_next_clicked)
@@ -104,20 +51,93 @@ class DisksPage(Gtk.Box):
 
     def on_refresh_clicked(self, button):
         disk = self.disk_combo.get_active_text()
+        if disk:
+            self.show_partitions(disk)
+
+
+    def show_partitions(self, disk):
+        child = self.partitions_box.get_first_child()
+        while child:
+            next_child = child.get_next_sibling()
+            self.partitions_box.remove(child)
+            child = next_child
+
+        self.partition_widgets.clear()
+
         if not disk:
             return
 
-        self.partition_combo.remove_all()
         partitions = self.list_partitions(disk)
 
-        if partitions:
-            for p in partitions:
-                self.partition_combo.append_text(p)
-        else:
-            self.partition_combo.append_text("No partition")
+        if not partitions:
+            self.partitions_box.append(Gtk.Label(label="No partitions found"))
+            return
 
-        self.partition_combo.set_active(0)
+        for p in partitions:
+            row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+            row.set_margin_bottom(10)
 
+            title = Gtk.Label(label=p)
+            title.set_halign(Gtk.Align.START)
+
+            options = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+
+            mount_combo = Gtk.ComboBoxText()
+
+            mount_combo.append_text("/")
+            mount_combo.append_text("/boot")
+            mount_combo.append_text("/home")
+            mount_combo.append_text("Custom")
+            mount_combo.set_active(0)
+
+            mount_entry = Gtk.Entry()
+            mount_entry.set_placeholder_text("/ mount point")
+            mount_entry.set_visible(False)
+
+
+            mount_combo.connect(
+                "changed",
+                lambda combo, entry=mount_entry: entry.set_visible(
+                    combo.get_active_text() == "Custom"
+                )
+            )
+
+            flags_combo = Gtk.ComboBoxText()
+            for f in ["No flag", "boot", "boot & esp", "swap"]:
+                flags_combo.append_text(f)
+            flags_combo.set_active(0)
+
+            format_check = Gtk.CheckButton(label="Format")
+
+            formats = Gtk.ComboBoxText()
+            for fs in ["ext4", "ext3", "ext2", "btrfs", "exfat", "fat32"]:
+                formats.append_text(fs)
+            formats.set_active(0)
+            formats.set_visible(False)
+
+            format_check.connect(
+                "toggled",
+                lambda btn, combo=formats: combo.set_visible(btn.get_active())
+            )
+
+            self.partition_widgets[p] = {
+                "mount_combo": mount_combo,
+                "mount_entry": mount_entry,
+                "flags": flags_combo,
+                "format_check": format_check,
+                "formats": formats
+            }
+
+            options.append(mount_combo)
+            options.append(mount_entry)
+            options.append(flags_combo)
+            options.append(format_check)
+            options.append(formats)
+
+            row.append(title)
+            row.append(options)
+
+            self.partitions_box.append(row)
 
     def list_disks(self):
         disks = []
@@ -137,37 +157,41 @@ class DisksPage(Gtk.Box):
                 partitions.append(f"/dev/{name}")
         return partitions
 
-    def on_toggled(self, button):
-        self.formats.set_visible(button.get_active())
+    def on_disk_changed(self, combo):
+        disk = combo.get_active_text()
+        if disk:
+            self.show_partitions(disk)
 
-    def on_apply_clicked(self, button, partition, mount_point, flag):
+
+    def on_next_clicked(self, button):
         from installer import partitions_flags
         from installer import partitions_mount_points
         from installer import partitions_format
         import installer
 
         installer.selected_disk = self.disk_combo.get_active_text()
-        self.partition_flags = partitions_flags
-        self.partition_mount_points = partitions_mount_points
-        self.partition_format = partitions_format
 
-        self.partition_flags.update({partition: flag})
-        self.partition_mount_points.update({partition: mount_point})
-        if self.checkbox.get_active():
-            self.partition_format.update({partition: self.formats.get_active_text()})
-        else:
-            self.partition_format.update({partition: False})
+        partitions_flags.clear()
+        partitions_mount_points.clear()
+        partitions_format.clear()
 
-    def on_disk_changed(self, combo):
-        disk = combo.get_active_text()
-        self.partition_combo.remove_all()
-        partitions = self.list_partitions(disk)
-        if partitions:
-            for p in partitions:
-                self.partition_combo.append_text(p)
-        else:
-            self.partition_combo.append_text("No partition")
-        self.partition_combo.set_active(0)
+        for partition, widgets in self.partition_widgets.items():
+            combo_value = widgets["mount_combo"].get_active_text()
 
-    def on_next_clicked(self, button):
-        pass
+            if combo_value == "Custom":
+                mount_point = widgets["mount_entry"].get_text()
+            else:
+                mount_point = combo_value
+
+            flag = widgets["flags"].get_active_text()
+            format_enabled = widgets["format_check"].get_active()
+            fs = widgets["formats"].get_active_text()
+
+            if mount_point:
+                partitions_mount_points[partition] = mount_point
+                partitions_flags[partition] = flag
+
+                if format_enabled:
+                    partitions_format[partition] = fs
+                else:
+                    partitions_format[partition] = False
