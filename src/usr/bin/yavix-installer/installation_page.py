@@ -167,14 +167,6 @@ class InstallationPage(Gtk.Box):
 
 		self.arch_chroot(["flatpak", "install", "-y", "flathub", "it.mijorus.gearlever"])
 
-		if installer.browser == "zen":
-			self.arch_chroot(["flatpak", "install", "-y", "flathub", "app.zen_browser.zen"])
-			self.arch_chroot(["pacman", "-Rns", "firefox", "--noconfirm"])
-
-		elif installer.browser == "brave":
-			self.arch_chroot(["flatpak", "install", "-y", "flathub", "com.brave.Browser"])
-			self.arch_chroot(["pacman", "-Rns", "firefox", "--noconfirm"])
-
 		if installer.office == "libreoffice":
 			self.arch_chroot(["flatpak", "install", "-y", "flathub", "org.libreoffice.LibreOffice"])
 

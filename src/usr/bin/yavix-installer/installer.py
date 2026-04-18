@@ -14,7 +14,6 @@ from disks_page import DisksPage
 from partitions_page import PartitionsPage
 from setting_page import SettingPage
 from installation_page import InstallationPage
-from browser_page import BrowserPage
 from office_page import OfficePage
 
 selected_disk = None
@@ -22,7 +21,6 @@ selected_disk = None
 language = None
 timezone = None
 
-browser = None
 office = None
 
 partitions_flags = {}
@@ -49,7 +47,6 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.disks_page = DisksPage()
 		self.partitions_page = PartitionsPage()
 		self.setting_page = SettingPage(self)
-		self.browser_page = BrowserPage()
 		self.office_page = OfficePage()
 		self.installation_page = InstallationPage()
 
@@ -58,7 +55,6 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.stack.add_named(self.partitions_page, "partitions")
 		self.stack.add_named(self.disks_page, "disks")
 		self.stack.add_named(self.setting_page, "setting")
-		self.stack.add_named(self.browser_page, "browser")	
 		self.stack.add_named(self.office_page, "office")
 		self.stack.add_named(self.installation_page, "installation")
 		
@@ -67,7 +63,6 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.language_page.next_button.connect("clicked", self.show_partitions_page)
 		self.partitions_page.next_button.connect("clicked", self.show_disks_page)
 		self.disks_page.next_button.connect("clicked", self.show_setting_page)
-		self.browser_page.next_button.connect("clicked", self.show_office_page)
 		self.office_page.next_button.connect("clicked", self.show_installation_page)
 		self.stack.set_visible_child_name("welcome")
 
@@ -78,7 +73,7 @@ class MainWindow(Gtk.ApplicationWindow):
 	def show_language_page(self, button):
 		self.stack.set_visible_child_name("language")
 	
-	def show_office_page(self, button):
+	def show_office_page(self):
 		self.stack.set_visible_child_name("office")
 
 	def show_disks_page(self, button):
@@ -90,9 +85,6 @@ class MainWindow(Gtk.ApplicationWindow):
 	def install_done(self):
 		self.installation_page.next_button.set_visible(True)
 
-	def show_browser_page(self):
-		self.stack.set_visible_child_name("browser")
-
 	def install_thread(self):
 		self.installation_page.install_system()
 		GLib.idle_add(self.install_done)
@@ -103,7 +95,6 @@ class MainWindow(Gtk.ApplicationWindow):
 		t.daemon = True
 		t.start()
 
-	 
 
 class InstallerApp(Adw.Application):
 	def __init__(self):
@@ -116,3 +107,4 @@ class InstallerApp(Adw.Application):
 if __name__ == "__main__":
 	app = InstallerApp()
 	app.run(sys.argv)
+
