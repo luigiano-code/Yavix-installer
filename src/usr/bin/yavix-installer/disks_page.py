@@ -84,6 +84,7 @@ class DisksPage(Gtk.Box):
 
             mount_combo = Gtk.ComboBoxText()
 
+            mount_combo.append_text("not used")
             mount_combo.append_text("/")
             mount_combo.append_text("/boot")
             mount_combo.append_text("/home")

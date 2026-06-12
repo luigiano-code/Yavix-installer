@@ -89,7 +89,7 @@ class InstallationPage(Gtk.Box):
 						subprocess.run(["sudo", "mount", root, MNT])
 		for p in installer.partitions_mount_points:
 			mountpoint = MNT + installer.partitions_mount_points[p]
-			if mountpoint == MNT + "/":
+			if mountpoint == MNT + "/" or mountpoint == MNT + "not used":
 				pass
 			else:
 				subprocess.run(["sudo", "mount", "--mkdir", p, mountpoint])
