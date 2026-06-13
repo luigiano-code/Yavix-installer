@@ -1,6 +1,6 @@
 pkgname=yavix-installer
-pkgver=1.0
-pkgrel=1
+pkgver=2.0
+pkgrel=2
 pkgdesc="Yavix Installer"
 arch=('x86_64')
 license=('GPL-3.0')

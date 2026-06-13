@@ -14,7 +14,7 @@ from disks_page import DisksPage
 from partitions_page import PartitionsPage
 from setting_page import SettingPage
 from installation_page import InstallationPage
-from office_page import OfficePage
+from optional_page import OptionalPage
 from internet_page import InternetPage
 
 selected_disk = None
@@ -22,7 +22,7 @@ selected_disk = None
 language = None
 timezone = None
 
-office = None
+optional_apps = None
 
 partitions_flags = {}
 partitions_mount_points = {}
@@ -57,7 +57,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.disks_page = DisksPage()
         self.partitions_page = PartitionsPage()
         self.setting_page = SettingPage(self)
-        self.office_page = OfficePage()
+        self.optional_page = OptionalPage()
         self.internet_page = InternetPage()
         self.installation_page = InstallationPage()
 
@@ -66,7 +66,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.stack.add_named(self.partitions_page, "partitions")
         self.stack.add_named(self.disks_page, "disks")
         self.stack.add_named(self.setting_page, "setting")
-        self.stack.add_named(self.office_page, "office")
+        self.stack.add_named(self.optional_page, "optional")
         self.stack.add_named(self.internet_page, "internet")
         self.stack.add_named(self.installation_page, "installation")
         
@@ -75,7 +75,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.language_page.next_button.connect("clicked", self.show_partitions_page)
         self.partitions_page.next_button.connect("clicked", self.show_disks_page)
         self.disks_page.next_button.connect("clicked", self.show_setting_page)
-        self.office_page.next_button.connect("clicked", self.show_installation_page)
+        self.optional_page.next_button.connect("clicked", self.show_installation_page)
 
         if test_internet():
             self.stack.set_visible_child_name("welcome")
@@ -89,8 +89,8 @@ class MainWindow(Gtk.ApplicationWindow):
     def show_language_page(self, button):
         self.stack.set_visible_child_name("language")
     
-    def show_office_page(self):
-        self.stack.set_visible_child_name("office")
+    def show_optional_page(self):
+        self.stack.set_visible_child_name("optional")
 
     def show_disks_page(self, button):
         self.stack.set_visible_child_name("disks")
@@ -123,4 +123,3 @@ class InstallerApp(Adw.Application):
 if __name__ == "__main__":
     app = InstallerApp()
     app.run(sys.argv)
-
