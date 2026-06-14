@@ -153,7 +153,7 @@ class InstallationPage(Gtk.Box):
             "systemd-logind",
             "dbus",
             "NetworkManager",
-            "gdm"
+            "sddm"
         ]
 
         for service in services:
@@ -164,7 +164,7 @@ class InstallationPage(Gtk.Box):
 
         self.arch_chroot(["flatpak", "remote-add", "--if-not-exists", "flathub", "https://flathub.org/repo/flathub.flatpakrepo"])
 
-        if installer.optional_apps == "install":
+        if installer.optional_apps == "Yes":
             self.arch_chroot(["flatpak", "install", "-y", "flathub", "org.localsend.localsend_app"])
             self.arch_chroot(["flatpak", "install", "-y", "flathub", "it.mijorus.gearlever"])
 
@@ -172,6 +172,10 @@ class InstallationPage(Gtk.Box):
 
         self.arch_chroot(["grub-install", "--target=x86_64-efi", "--efi-directory=/boot", "--bootloader-id=YAVIX"])
         self.arch_chroot(["grub-mkconfig", "-o", "/boot/grub/grub.cfg"])
+        self.arch_chroot(["sed", "-i", 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"/', "/etc/default/grub"])
+        self.arch_chroot(["grub-mkconfig", "-o", "/boot/grub/grub.cfg"])
+
+        self.arch_chroot(["mkinitcpio", "-c", "/etc/mkinitcpio.conf", "-g", "/boot/initramfs-linux.img"])
 
         self.arch_chroot(["rm", "-f", "/etc/pacman.conf"])
         self.arch_chroot(["cp", "-f", "/etc/pacman-conf-new", "/etc/pacman.conf"])
